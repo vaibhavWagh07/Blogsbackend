@@ -60,16 +60,28 @@ app.get('/api/blogs/:id', async (req, res) => {
         }
         res.json(blog);
         await client.close();
-        
+
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
     }
 });
 
+//function for date in blogs
+function getCurrentDate() {
+    const currentDate = new Date();
+    const day = currentDate.getDate();
+    const monthNames = ['Jan', 'Feb', 'March', 'April', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = monthNames[currentDate.getMonth()];
+    const year = currentDate.getFullYear();
+    return `${day} ${month} ${year}`;
+}
+
+
 // posting api for blogs
 app.post('/sendBlogs', async (req, res) => {
     const formData = req.body;
+    formData.date = getCurrentDate();
 
     try {
         const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -93,3 +105,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+// api on render https://blogsbackend-l09l.onrender.com
