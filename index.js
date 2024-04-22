@@ -102,6 +102,51 @@ app.post('/sendBlogs', async (req, res) => {
     }
 });
 
+// patch api for blogs
+app.patch("/api/blogs/:id", async (req, res) => {
+    const updates = req.body;
+    const id = req.params.id;
+  
+    // Check if the provided ID is valid
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid ID format" });
+    }
+  
+    try {
+      const client = new MongoClient(mongoURI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+  
+      await client.connect();
+      const db = client.db("recrutoryBlogs");
+      const collection = db.collection("blogs");
+  
+      // Instantiate ObjectId with `new` when using it to construct query
+      const result = await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updates }
+      );
+  
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ error: "No matching document found" });
+      }
+  
+      if (result.modifiedCount === 0) {
+        return res
+          .status(200)
+          .json({ message: "No changes made", details: result });
+      }
+  
+      res.status(200).json({ message: "Update successful", details: result });
+    } catch (err) {
+      console.error("Database update error:", err);
+      res
+        .status(500)
+        .json({ error: "Could not update the data", details: err.message });
+    }
+  });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
