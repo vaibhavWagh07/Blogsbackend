@@ -4,11 +4,13 @@ const bodyParser = require('body-parser');
 const { MongoClient,ObjectId } = require('mongodb');
 const cors = require('cors');
 const { default: mongoose } = require('mongoose');
+const compression = require('compression')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(cors());
+app.use(compression());
 
 const mongoURI = 'mongodb+srv://vaibhav:1234@cluster0.sk5rubx.mongodb.net/recrutoryBlogs?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(mongoURI,{ useNewUrlParser: true, useUnifiedTopology: true }).then(()=>{
