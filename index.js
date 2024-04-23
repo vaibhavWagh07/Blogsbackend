@@ -220,18 +220,47 @@ app.get('/api/blogs/:id', async (req, res) => {
 });
 
 // Posting API for blogs
-app.post('/sendBlogs', async (req, res) => {
-  try {
-    const formData = req.body;
-    formData.date = getCurrentDate(); // Assuming getCurrentDate() is defined
+// app.post('/sendBlogs', async (req, res) => {
+//   try {
+//     const formData = req.body;
+//     formData.date = getCurrentDate(); // Assuming getCurrentDate() is defined
 
-    const newBlog = await Blog.create(formData);
-    res.status(200).send('OK');
-  } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//     const newBlog = await Blog.create(formData);
+//     res.status(200).send('OK');
+//   } catch (err) {
+//     console.error('Error:', err);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+
+function getCurrentDate() {
+    const currentDate = new Date();
+    const day = currentDate.getDate();
+    const monthNames = ['Jan', 'Feb', 'March', 'April', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = monthNames[currentDate.getMonth()];
+    const year = currentDate.getFullYear();
+    return `${day} ${month} ${year}`;
+}
+app.post('/sendBlogs', async (req, res) => {
+      const formData = req.body;
+      formData.date = getCurrentDate();
+  
+      try {
+          const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+          await client.connect();
+  
+          const db = client.db('recrutoryBlogs'); 
+          const collection1 = db.collection('blogs');
+  
+          await collection1.insertOne(formData);
+          res.status(200).send('OK');
+          
+          await client.close();
+      } catch (err) {
+          console.error('Error:', err);
+          res.status(500).send('Internal Server Error');
+      }
+  });
 
 // Patch API for blogs
 app.patch("/api/blogs/:id", async (req, res) => {
