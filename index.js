@@ -30,8 +30,8 @@
 
 //     try {
 //         await client.connect();
-//         const db = client.db('recrutoryBlogs'); 
-//         const collection = db.collection('blogs'); 
+//         const db = client.db('recrutoryBlogs');
+//         const collection = db.collection('blogs');
 
 //         const blogs = await collection.find({}).toArray(); // Fetch all blog documents
 //         res.json(blogs);
@@ -39,7 +39,7 @@
 //         console.error('Error:', err);
 //         res.status(500).send('Internal Server Error');
 //     } finally {
-//         await client.close(); 
+//         await client.close();
 //     }
 // });
 
@@ -79,7 +79,6 @@
 //     return `${day} ${month} ${year}`;
 // }
 
-
 // // posting api for blogs
 // app.post('/sendBlogs', async (req, res) => {
 //     const formData = req.body;
@@ -89,12 +88,12 @@
 //         const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 //         await client.connect();
 
-//         const db = client.db('recrutoryBlogs'); 
+//         const db = client.db('recrutoryBlogs');
 //         const collection1 = db.collection('blogs');
 
 //         await collection1.insertOne(formData);
 //         res.status(200).send('OK');
-        
+
 //         await client.close();
 //     } catch (err) {
 //         console.error('Error:', err);
@@ -106,37 +105,37 @@
 // app.patch("/api/blogs/:id", async (req, res) => {
 //     const updates = req.body;
 //     const id = req.params.id;
-  
+
 //     // Check if the provided ID is valid
 //     if (!ObjectId.isValid(id)) {
 //       return res.status(400).json({ error: "Invalid ID format" });
 //     }
-  
+
 //     try {
 //       const client = new MongoClient(mongoURI, {
 //         useNewUrlParser: true,
 //         useUnifiedTopology: true,
 //       });
-  
+
 //       await client.connect();
 //       const db = client.db("recrutoryBlogs");
 //       const collection = db.collection("blogs");
-  
+
 //       const result = await collection.updateOne(
 //         { _id: new ObjectId(id) },
 //         { $set: updates }
 //       );
-  
+
 //       if (result.matchedCount === 0) {
 //         return res.status(404).json({ error: "No matching document found" });
 //       }
-  
+
 //       if (result.modifiedCount === 0) {
 //         return res
 //           .status(200)
 //           .json({ message: "No changes made", details: result });
 //       }
-  
+
 //       res.status(200).json({ message: "Update successful", details: result });
 //     } catch (err) {
 //       console.error("Database update error:", err);
@@ -146,19 +145,12 @@
 //     }
 //   });
 
-
 // const port = process.env.PORT || 3000;
 // app.listen(port, () => {
 //     console.log(`Server is running on port ${port}`);
 // });
 
 // // api on render https://blogsbackend-l09l.onrender.com
-
-
-
-
-
-
 
 // ------------------------------------trying new api code for reducing the time---------------------
 // const express = require('express');
@@ -250,17 +242,17 @@
 // app.post('/sendBlogs', async (req, res) => {
 //       const formData = req.body;
 //       formData.date = getCurrentDate();
-  
+
 //       try {
 //           const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 //           await client.connect();
-  
-//           const db = client.db('recrutoryBlogs'); 
+
+//           const db = client.db('recrutoryBlogs');
 //           const collection1 = db.collection('blogs');
-  
+
 //           await collection1.insertOne(formData);
 //           res.status(200).send('OK');
-          
+
 //           await client.close();
 //       } catch (err) {
 //           console.error('Error:', err);
@@ -297,90 +289,139 @@
 // });
 
 
+
+
 // practice to reduce the response time
-const express = require('express');
+const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
-const { MongoClient, ObjectId } = require('mongodb');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const compression = require('compression');
+const bodyParser = require("body-parser");
+const { MongoClient, ObjectId } = require("mongodb");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const compression = require("compression");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static("public"));
 app.use(cors());
 app.use(compression());
 
-const mongoURI = 'mongodb+srv://vaibhav:1234@cluster0.sk5rubx.mongodb.net/recrutoryBlogs?retryWrites=true&w=majority&appName=Cluster0';
+const mongoURI =
+  "mongodb+srv://vaibhav:1234@cluster0.sk5rubx.mongodb.net/recrutoryBlogs?retryWrites=true&w=majority&appName=Cluster0";
 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    console.log('MongoDB Connected');
+    console.log("MongoDB Connected");
   })
-  .catch(err => console.error(err));
+  .catch((err) => console.error(err));
 
 const db = mongoose.connection;
 
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // Define Schema and Model using Mongoose
-const blogSchema = new mongoose.Schema({
-});
+const blogSchema = new mongoose.Schema({});
 
-const Blog = mongoose.model('Blog', blogSchema);
+const Blog = mongoose.model("Blog", blogSchema);
 
 // Testing API
-app.get('/msgDisplay', (req, res) => {
+app.get("/msgDisplay", (req, res) => {
   res.status(200).send({
-    msg: "APIs are working successfully"
+    msg: "APIs are working successfully",
   });
 });
 
 // Get all blogs
-app.get('/api/blogs', async (req, res) => {
+app.get("/api/blogs", async (req, res) => {
   try {
     const blogs = await Blog.find({}).lean(); // Use lean() for plain JavaScript objects
     res.json(blogs);
   } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send('Internal Server Error');
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
   }
-});
+}); 
 
 // Get blogs using Id
-app.get('/api/blogs/:id', async (req, res) => {
+// app.get("/api/blogs/:id", async (req, res) => {
+//   try {
+//     const blogId = req.params.id;
+
+//     // Find the blog by ID and increment views
+//     const updatedBlog = await Blog.findOneAndUpdate(
+//       { _id: blogId },
+//       { $inc: { views: 1 } }, // Increment views by 1
+//       { new: true, upsert: true, setDefaultsOnInsert: true } // Return the updated document
+//     );
+
+//     if (!updatedBlog) {
+//       return res.status(404).send("Blog not found");
+//     }
+
+//     res.json(updatedBlog);
+//   } catch (err) {
+//     console.error("Error:", err);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
+
+
+app.get("/api/blogs/:id", async (req, res) => {
+  const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+
   try {
-    const blog = await Blog.findById(req.params.id).lean(); // Use lean() for plain JavaScript objects
-    if (!blog) {
-      return res.status(404).send('Blog not found');
+    await client.connect();
+    const db = client.db('recrutoryBlogs');
+    const collection = db.collection('blogs');
+    const blogId = req.params.id;
+
+    // Convert blogId to ObjectId
+    const objectId = new ObjectId(blogId);
+
+    // Find the blog by ID and increment views
+    const updatedBlog = await collection.findOneAndUpdate(
+      { _id: objectId },
+      { $inc: { views: 1 } },
+      { returnOriginal: false, upsert: true }
+    );
+
+    if (!updatedBlog) {
+      return res.status(404).send("Blog not found");
     }
-    res.json(blog);
+
+    res.json(updatedBlog);
   } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send('Internal Server Error');
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
+  } finally {
+    await client.close();
   }
 });
 
 // Posting API for blogs
-app.post('/sendBlogs', async (req, res) => {
+app.post("/sendBlogs", async (req, res) => {
   const formData = req.body;
   formData.date = getCurrentDate();
-  
+  formData.views = 1;
+
   try {
-    const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     await client.connect();
 
-    const db = client.db('recrutoryBlogs'); 
-    const collection1 = db.collection('blogs');
+    const db = client.db("recrutoryBlogs");
+    const collection1 = db.collection("blogs");
 
     await collection1.insertOne(formData);
-    res.status(200).send('OK');
-    
+    res.status(200).send("OK");
+
     await client.close();
   } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send('Internal Server Error');
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -395,22 +436,37 @@ app.patch("/api/blogs/:id", async (req, res) => {
       return res.status(400).json({ error: "Invalid ID format" });
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(id, updates, { new: true }).lean(); // Use lean() for plain JavaScript objects
+    const updatedBlog = await Blog.findByIdAndUpdate(id, updates, {
+      new: true,
+    }).lean(); // Use lean() for plain JavaScript objects
     if (!updatedBlog) {
       return res.status(404).json({ error: "No matching document found" });
     }
 
     res.status(200).json({ message: "Update successful", updatedBlog });
   } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send('Internal Server Error');
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
 function getCurrentDate() {
   const currentDate = new Date();
   const day = currentDate.getDate();
-  const monthNames = ['Jan', 'Feb', 'March', 'April', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "March",
+    "April",
+    "May",
+    "Jun",
+    "July",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const month = monthNames[currentDate.getMonth()];
   const year = currentDate.getFullYear();
   return `${day} ${month} ${year}`;
@@ -420,3 +476,4 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+ 
